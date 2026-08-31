@@ -798,17 +798,8 @@ const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.tar
  e.target.querySelectorAll?.('.fill[data-w]').forEach(f=>f.style.width=f.dataset.w+'%');io.unobserve(e.target);}});},{threshold:.15});
 $$('.r').forEach(el=>io.observe(el));
 
-const MAX_APP="max://phone/79128463636";
-const MAX_WEB="https://web.max.ru/94707241";
-document.querySelectorAll('a.btn-max').forEach(a=>{
-  a.href=MAX_APP;
-  a.addEventListener('click',function(e){
-    e.preventDefault();
-    var t=setTimeout(function(){window.open(MAX_WEB,'_blank');},2000);
-    window.location.href=MAX_APP;
-    window.addEventListener('blur',function(){clearTimeout(t);},{once:true});
-  });
-});
+const MAX_URL="https://max.ru/94707241";
+document.querySelectorAll('a.btn-max').forEach(a=>{a.href=MAX_URL;a.target="_blank";});
 document.addEventListener('click',function(e){
   var a=e.target.closest('a[href^="#"]'); if(!a) return;
   var id=a.getAttribute('href'); if(!id||id.length<2) return;
