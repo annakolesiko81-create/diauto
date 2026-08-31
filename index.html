@@ -8,7 +8,7 @@
 <meta name="description" content="Автосервис и магазин запчастей для иномарок в Оренбурге. Рейтинг 5.0 на Яндексе. Диагностика бесплатно при ремонте у нас. Двигатель, АКПП, ходовая, тормоза. Запчасти оригинал и аналоги.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0a0a0b; --bg2:#101012; --surface:#161619; --surface2:#1d1d21;
@@ -19,7 +19,7 @@
   --ok:#36d07a; --busy:#ff5b5b;
   --r:16px; --rs:10px; --maxw:1240px;
   --shadow:0 24px 60px -20px rgba(0,0,0,.7);
-  --disp:'Russo One',sans-serif; --ui:'Manrope',sans-serif;
+  --disp:'Outfit',sans-serif; --ui:'Outfit',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -118,9 +118,8 @@ img{display:block;max-width:100%}
 .tn:hover{border-color:var(--line2);transform:translateY(-3px)}
 .tn::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--grad);transform:scaleX(0);transform-origin:left;transition:.5s}
 .tn:hover::before{transform:scaleX(1)}
-.tn .n{font-family:'Outfit',sans-serif;font-weight:300;font-size:48px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tn .l{color:var(--muted);font-size:14px;margin-top:8px;font-family:'Outfit',sans-serif}
-.facts .sec-head h2{font-family:'Outfit',sans-serif;font-weight:300}
+.tn .n{font-family:var(--disp);font-weight:300;font-size:48px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tn .l{color:var(--muted);font-size:14px;margin-top:8px;font-family:var(--ui)}
 .bars{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:18px}
 .bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
 .bar .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px}
@@ -427,7 +426,7 @@ footer p{color:var(--muted);font-size:14px;font-family:var(--ui)}
 <div class="ticker"><span class="lbl">Стоимость работ · от</span><div class="track" id="priceTicker"></div></div>
 
 <!-- FACTS -->
-<section class="sec facts" id="facts" style="font-family:'Outfit',sans-serif">
+<section class="sec facts" id="facts">
   <div class="wrap">
     <div class="sec-head r"><h2>Факты</h2></div>
     <div class="tn-grid r">
