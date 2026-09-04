@@ -368,6 +368,53 @@ footer p{color:var(--muted);font-size:14px;font-family:var(--ui)}
   .sec{padding:46px 0}.sec-head{margin-bottom:26px}
   .sec-head h2{font-size:clamp(26px,7vw,34px)}
 }
+
+/* ── Animations ── */
+/* Scroll progress */
+.scroll-prog{position:fixed;top:0;left:0;height:3px;background:var(--grad);z-index:300;width:0;transition:width .08s linear;pointer-events:none}
+
+/* Button shimmer on amber CTA */
+.btn-amber{overflow:hidden;position:relative}
+.btn-amber::after{content:"";position:absolute;top:-50%;left:-80%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);animation:shimmer 3.2s ease-in-out infinite}
+@keyframes shimmer{0%{left:-80%}100%{left:130%}}
+
+/* Ripple on click */
+.btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.28);transform:scale(0);animation:rpl .55s linear;pointer-events:none}
+@keyframes rpl{to{transform:scale(5);opacity:0}}
+
+/* Service card entrance stagger */
+.svc-grid .svc{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.svc-grid .svc.in{opacity:1;transform:none}
+.svc-grid .svc:nth-child(1){transition-delay:.05s}
+.svc-grid .svc:nth-child(2){transition-delay:.12s}
+.svc-grid .svc:nth-child(3){transition-delay:.19s}
+.svc-grid .svc:nth-child(4){transition-delay:.26s}
+.svc-grid .svc:nth-child(5){transition-delay:.33s}
+.svc-grid .svc:nth-child(6){transition-delay:.40s}
+.svc-grid .svc:nth-child(7){transition-delay:.47s}
+.svc-grid .svc:nth-child(8){transition-delay:.54s}
+
+/* Review card entrance stagger */
+.rev-grid .rev{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+.rev-grid .rev.in{opacity:1;transform:none}
+.rev-grid .rev:nth-child(1){transition-delay:.04s}
+.rev-grid .rev:nth-child(2){transition-delay:.10s}
+.rev-grid .rev:nth-child(3){transition-delay:.16s}
+.rev-grid .rev:nth-child(4){transition-delay:.22s}
+
+/* Step items */
+.step{transition:.35s ease}
+.step:hover{transform:translateY(-4px)}
+
+/* Stat tile glow on hover */
+.tn::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,193,7,.1),transparent 65%);opacity:0;transition:.4s}
+.tn:hover::after{opacity:1}
+
+/* Gallery overlay */
+.gal figure::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(255,193,7,.18));opacity:0;transition:.4s}
+.gal figure:hover::after{opacity:1}
+.gal figure{position:relative;overflow:hidden}
 </style>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -840,6 +887,43 @@ const nav=$('#nav');addEventListener('scroll',()=>nav.classList.toggle('scrolled
 $('#burger').onclick=()=>$('#menu').classList.toggle('open');
 $$('#menu a').forEach(a=>a.onclick=()=>$('#menu').classList.remove('open'));
 $('#yr').textContent=new Date().getFullYear();
+
+/* Scroll progress bar */
+const prog=document.createElement('div');prog.className='scroll-prog';document.body.prepend(prog);
+window.addEventListener('scroll',()=>{const h=document.documentElement;prog.style.width=(scrollY/(h.scrollHeight-h.clientHeight)*100)+'%';},{passive:true});
+
+/* Ripple on button click */
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.btn');if(!btn||btn.closest('.contactbar'))return;
+  const r=document.createElement('span');r.className='ripple';
+  const rect=btn.getBoundingClientRect(),sz=Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+  btn.appendChild(r);r.addEventListener('animationend',()=>r.remove());
+});
+
+/* Number counter for stat tiles */
+function animCount(el,target,dur=1400){
+  const isFloat=target%1!==0,start=performance.now();
+  (function tick(t){
+    const p=Math.min((t-start)/dur,1),eased=1-Math.pow(1-p,3),v=eased*target;
+    el.textContent=isFloat?v.toFixed(1):Math.round(v);
+    if(p<1)requestAnimationFrame(tick);
+  })(performance.now());
+}
+const tnObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    const n=e.target.querySelector('.n');
+    if(n&&!n.dataset.counted){n.dataset.counted=1;animCount(n,parseFloat(n.textContent));}
+    tnObs.unobserve(e.target);
+  }});
+},{threshold:.5});
+document.querySelectorAll('.tn').forEach(t=>tnObs.observe(t));
+
+/* Stagger entrance for service & review cards */
+const cardObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');cardObs.unobserve(e.target);}});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.svc-grid .svc, .rev-grid .rev').forEach(c=>cardObs.observe(c));
 </script>
 </body>
 </html>
