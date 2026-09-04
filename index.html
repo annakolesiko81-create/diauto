@@ -802,7 +802,7 @@ function renderSlots(){const now=new Date().getHours();const offset=DAY_OFFSETS[
   $('#fDay').value=dl;$('#fTime').value=s.dataset.h.padStart(2,'0')+':00';document.getElementById('contacts').scrollIntoView({behavior:'smooth'});});}
 renderTabs();renderSlots();
 setInterval(()=>{$('#upd').textContent='только что';renderSlots();},45000);
-$('#fDay').innerHTML=DAYS.map(d=>`<option>${d}</option>`).join('');
+$('#fDay').innerHTML=DAY_OFFSETS.map(o=>{const d=new Date();d.setDate(d.getDate()+o);return `<option>${d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})}</option>`;}).join('');
 $('#fTime').innerHTML=HOURS.map(h=>`<option>${String(h).padStart(2,'0')}:00</option>`).join('');
 
 /* form -> TG/MAX */
