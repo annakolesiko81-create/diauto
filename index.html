@@ -349,7 +349,7 @@ footer p{color:var(--muted);font-size:14px;font-family:var(--ui)}
 .chooser-form{background:none;border:none;color:var(--muted);font-family:var(--ui);font-size:13.5px;cursor:pointer;text-decoration:underline;margin-top:4px;width:100%;padding:6px}
 .chooser-form:hover{color:var(--amber)}
 
-#slots{display:none}.bars{display:none}
+.bars{display:none}
 .contactbar{position:fixed;z-index:90;display:flex;gap:8px}
 .contactbar .btn{align-items:center}
 @media(max-width:980px){
@@ -775,19 +775,31 @@ function updStatus(){const h=new Date().getHours(),open=h>=10&&h<19;
 updStatus();setInterval(updStatus,60000);
 
 /* slots */
-const HOURS=[10,11,12,13,14,15,16,17,18],DAYS=['Сегодня','Завтра','Послезавтра'],N=HOURS.length;
-function seeded(d,h){const b=new Date().getHours();return ((d*7+h*3+b*5)%10)<4;}
-function dayDate(o){const d=new Date();d.setDate(d.getDate()+o);return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});}
+const HOURS=[10,11,12,13,14,15,16,17,18],N=HOURS.length;
+const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const WORK_DAYS=6; // показываем 6 ближайших рабочих дней (Пн–Сб)
+function getWorkDays(){
+  const days=[];const today=new Date();
+  for(let o=0;o<14&&days.length<WORK_DAYS;o++){
+    const d=new Date(today);d.setDate(today.getDate()+o);
+    if(d.getDay()!==0) days.push(o); // пропускаем воскресенье
+  }
+  return days;
+}
+const DAY_OFFSETS=getWorkDays();
+function dateKey(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10);}
+function seeded(offset,h){const key=dateKey(offset);let s=0;for(let i=0;i<key.length;i++)s=(s*31+key.charCodeAt(i))>>>0;return ((s^(h*1234567))%10)<3;}
+function dayLabel(offset){const d=new Date();d.setDate(d.getDate()+offset);const dn=DAY_NAMES[d.getDay()];const dt=d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});return offset===0?'Сегодня<b>'+dt+'</b>':dn+'<b>'+dt+'</b>';}
 let curDay=0;
-function renderTabs(){$('#dayTabs').innerHTML=DAYS.map((d,i)=>`<button class="day-tab ${i===curDay?'active':''}" data-d="${i}">${d}<b>${dayDate(i)}</b></button>`).join('');
+function renderTabs(){$('#dayTabs').innerHTML=DAY_OFFSETS.map((o,i)=>`<button class="day-tab ${i===curDay?'active':''}" data-d="${i}">${dayLabel(o)}</button>`).join('');
  $$('.day-tab').forEach(b=>b.onclick=()=>{curDay=+b.dataset.d;renderTabs();renderSlots();});}
-function freeOn(day){const n=new Date().getHours();let f=0;HOURS.forEach(h=>{if(!((day===0&&h<=n)||seeded(day,h)))f++;});return f;}
-function renderSlots(){const n=new Date().getHours();let free=0;
- $('#slotGrid').innerHTML=HOURS.map(h=>{const busy=(curDay===0&&h<=n)||seeded(curDay,h);if(!busy)free++;
+function renderSlots(){const now=new Date().getHours();const offset=DAY_OFFSETS[curDay];let free=0;
+ $('#slotGrid').innerHTML=HOURS.map(h=>{const past=offset===0&&h<=now;const busy=past||seeded(offset,h);if(!busy)free++;
   return `<button class="slot ${busy?'busy':'free'}" data-h="${h}" ${busy?'disabled':''}>${String(h).padStart(2,'0')}:00</button>`;}).join('');
  $('#freeCount').textContent=free;const load=Math.round((1-free/N)*100);$('#ring').style.setProperty('--p',load);$('#loadPct').textContent=load+'%';
+ const d=new Date();d.setDate(d.getDate()+offset);const dl=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
  $$('.slot.free').forEach(s=>s.onclick=()=>{$$('.slot').forEach(x=>x.classList.remove('sel'));s.classList.add('sel');
-  $('#fDay').value=DAYS[curDay];$('#fTime').value=s.dataset.h.padStart(2,'0')+':00';document.getElementById('contacts').scrollIntoView({behavior:'smooth'});});}
+  $('#fDay').value=dl;$('#fTime').value=s.dataset.h.padStart(2,'0')+':00';document.getElementById('contacts').scrollIntoView({behavior:'smooth'});});}
 renderTabs();renderSlots();
 setInterval(()=>{$('#upd').textContent='только что';renderSlots();},45000);
 $('#fDay').innerHTML=DAYS.map(d=>`<option>${d}</option>`).join('');
