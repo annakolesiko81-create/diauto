@@ -632,10 +632,12 @@ footer p{color:var(--muted);font-size:14px;font-family:var(--ui)}
         </div>
         <div class="form-ok" id="formOk">
           <div class="ico">✓</div><h3>Заявка готова</h3>
-          <p class="sub">Текст скопирован — отправьте его нам в мессенджер или просто позвоните.</p>
-          <div class="sm" id="okSummary"></div>
+          <p class="sub">В Telegram текст вставится автоматически. Для MAX — нажмите «Копировать».</p>
+          <div class="sm" id="okSummary" style="position:relative">
+            <button id="copyBtn" onclick="navigator.clipboard.writeText(document.getElementById('okSummary').textContent.trim()).then(()=>{this.textContent='Скопировано ✓';setTimeout(()=>this.textContent='Копировать',2000)})" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Копировать</button>
+          </div>
           <div class="ok-btns">
-            <a href="https://t.me/SeregaKolesovv" target="_blank" rel="noopener" class="btn btn-tg">Открыть Telegram</a>
+            <a id="tgBtn" href="https://t.me/SeregaKolesovv" target="_blank" rel="noopener" class="btn btn-tg">Открыть Telegram</a>
             <a href="https://max.ru/u/f9LHodD0cOLxwivHE-PuUbA9HbKmdiy1o9oTe-ieyEkA1kE9OU87UodcLg4" target="_blank" rel="noopener" class="btn btn-max"><svg width="16" height="16" viewBox="0 0 24 24" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 17 L3 6 C3 4.3 4.3 3 6 3 L19 3 C20.7 3 22 4.3 22 6 L22 15 C22 16.7 20.7 18 19 18 L8 18 Z M17 10.5 A4 4 0 1 0 9 10.5 A4 4 0 1 0 17 10.5 Z" fill="white"/></svg>Открыть MAX</a>
             <a href="tel:+73532963636" class="btn btn-amber">Позвонить +7 (3532) 96-36-36</a>
           </div>
@@ -812,7 +814,7 @@ $('#submitBtn').onclick=async()=>{const name=$('#fName').value.trim(),phone=$('#
  const car=$('#fCar').value.trim()||'—',service=$('#fService').value,time=$('#fDay').value+', '+$('#fTime').value;
  const msg=`Заявка с сайта ДеталИномарок\nИмя: ${name}\nТелефон: ${phone}\nАвто: ${car}\nУслуга: ${service}\nЖелаемое время: ${time}`;
  const hp=$('#fWebsite')?$('#fWebsite').value:'';
- const ok=()=>{$('#okSummary').textContent=msg;$('#formBody').style.display='none';$('#formOk').classList.add('show');};
+ const ok=()=>{$('#okSummary').textContent=msg;$('#tgBtn').href='https://t.me/SeregaKolesovv?text='+encodeURIComponent(msg);$('#formBody').style.display='none';$('#formOk').classList.add('show');};
  const fallback=()=>{try{navigator.clipboard&&navigator.clipboard.writeText(msg);}catch(e){}ok();};
  if(WORKER_URL&&WORKER_URL.indexOf('http')===0){const btn=$('#submitBtn'),lbl=btn.textContent;btn.disabled=true;btn.textContent='Отправляем…';
   try{const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,car,service,time,website:hp})});const res=await r.json();if(!res.ok)throw 0;ok();}
